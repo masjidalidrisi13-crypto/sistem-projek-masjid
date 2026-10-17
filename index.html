@@ -172,8 +172,8 @@
         .negative-text { display: none; margin-top: 5px; font-size: 12px; color: #dc2626; font-weight: 700; }
         .negative-text.show { display: block; }
         .print-signatures { display: none; }
-
-        /* Modal Analisa A4 Portrait (Diperkemas supaya muat elok tanpa skrol melintang) */
+        
+        /* Modal Analisa A4 Portrait */
         #analisaModal {
             display: none;
             position: fixed;
@@ -186,7 +186,7 @@
         }
         .analisa-modal-content {
             background: #ffffff;
-            width: 550px;
+            width: 650px;
             max-width: 100%;
             max-height: 95vh;
             border-radius: 8px;
@@ -218,16 +218,14 @@
             width: 100%;
             border-collapse: collapse;
             margin-top: 10px;
-            font-size: 12px;
-            table-layout: fixed;
+            font-size: 13px;
         }
         .analisa-table th, .analisa-table td {
             border: 1px solid #cbd5e1;
-            padding: 6px 10px;
-            word-wrap: break-word;
+            padding: 8px 12px;
         }
         .analisa-table th {
-            background: #065f46;
+            background: #1e293b;
             color: white;
             text-align: left;
         }
@@ -366,7 +364,8 @@
             <div><p>Disediakan,</p><br><br><p>Bendahari</p></div>
             <div><p>Disahkan oleh,</p><br><br><p>Pengerusi Masjid Al-Idrisi</p></div>
         </div>
-        <!-- Bahagian Butang Tambah Rekod & Analisa (Disusun Atas Bawah) -->
+
+        <!-- Bahagian Butang Tambah Rekod & Analisa -->
         <div class="form-box no-print">
             <h3>Pengurusan Rekod & Analisa</h3>
             <div class="button-group-stack">
@@ -378,6 +377,7 @@
             <button class="btn-dark" onclick="window.print()">Cetak / Simpan sebagai PDF</button>
         </div>
     </div>
+
     <!-- Modal Borang Tambah / Kemaskini Rekod -->
     <div id="expenseModal">
         <div class="expense-modal-content">
@@ -434,7 +434,8 @@
             </div>
         </div>
     </div>
-    <!-- Modal Paparan Analisa A4 Portrait -->
+
+    <!-- Modal Paparan Analisa A4 Portrait (Dalam Bentuk Jadual) -->
     <div id="analisaModal">
         <div class="analisa-modal-content">
             <div class="analisa-modal-header">
@@ -449,6 +450,7 @@
             </div>
         </div>
     </div>
+
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.4.0/firebase-app.js";
         import { getAuth, signInAnonymously, signInWithCustomToken } from "https://www.gstatic.com/firebasejs/11.4.0/firebase-auth.js";
@@ -456,7 +458,6 @@
         
         const appId = typeof __app_id !== 'undefined' ? __app_id : 'sistem-masjid-idrisi';
         
-              
         const firebaseConfig = {
             apiKey: "AIzaSyDEe2UDHIHHuNYOXGbiLgASzn2YLONdIq8", 
             authDomain: "sistem-projek-masjid.firebaseapp.com", 
@@ -602,7 +603,7 @@
         document.getElementById("inputPeruntukan").addEventListener("keydown", function(event) {
             if (event.key === "Enter") { window.savePeruntukan(); }
         });
-        // Fungsi Modal Tambah Rekod
+
         window.openExpenseModal = function() {
             document.getElementById("expenseForm").reset();
             document.getElementById("expenseForm").removeAttribute("data-edit-id");
@@ -686,7 +687,8 @@
                 window.showLoading(false);
             });
         }
-        // Fungsi Modal Analisa & Cetak Analisa A4 Portrait
+
+        // Fungsi Analisa Dalam Bentuk Jadual (Syiling, Mozek, Dataran, Lain-lain, Jumlah Peruntukan, Perbelanjaan & Baki)
         window.openAnalisaModal = function() {
             var jumlahSyiling = 0, jumlahMozek = 0, jumlahDataran = 0, jumlahLainLain = 0;
             perbelanjaan.forEach(function(item) {
@@ -697,38 +699,39 @@
             });
             var jumlahKeseluruhan = jumlahSyiling + jumlahMozek + jumlahDataran + jumlahLainLain;
             var bakiPeruntukan = peruntukan - jumlahKeseluruhan;
+
             var html = `
                 <div class="analisa-print-page">
-                    <div style="text-align: center; border-bottom: 2px solid #059669; padding-bottom: 10px; margin-bottom: 12px;">
-                        <h2 style="margin: 0; color: #065f46; font-size: 16px; text-transform: uppercase;">Analisa Kewangan Projek</h2>
-                        <h3 style="margin: 3px 0; color: #475569; font-size: 13px;">Masjid Al-Idrisi</h3>
+                    <div style="text-align: center; border-bottom: 2px solid #059669; padding-bottom: 8px; margin-bottom: 12px;">
+                        <h2 style="margin: 0; color: #065f46; font-size: 15px; text-transform: uppercase;">Analisa Kewangan Mengikut Kategori</h2>
+                        <h3 style="margin: 3px 0; color: #475569; font-size: 12px;">Masjid Al-Idrisi</h3>
                     </div>
                     <table class="analisa-table">
                         <thead>
                             <tr>
-                                <th>Perkara / Kategori</th>
-                                <th style="text-align: right; width: 120px;">Jumlah (RM)</th>
+                                <th>Butiran / Kategori</th>
+                                <th style="text-align: right; width: 130px;">Jumlah (RM)</th>
                             </tr>
                         </thead>
                         <tbody>
                             <tr>
-                                <td>Jumlah Peruntukan</td>
+                                <td><strong>Jumlah Peruntukan Keseluruhan</strong></td>
                                 <td style="text-align: right; font-weight: 700; color: #047857;">${formatRM(peruntukan)}</td>
                             </tr>
                             <tr>
-                                <td>Perbelanjaan Kategori: ${escapeHtml(kategori.syiling || 'Syiling')}</td>
+                                <td>Perbelanjaan Kategori: <strong>${escapeHtml(kategori.syiling || 'Syiling')}</strong></td>
                                 <td style="text-align: right;">${formatRM(jumlahSyiling)}</td>
                             </tr>
                             <tr>
-                                <td>Perbelanjaan Kategori: ${escapeHtml(kategori.mozek || 'Mozek')}</td>
+                                <td>Perbelanjaan Kategori: <strong>${escapeHtml(kategori.mozek || 'Mozek')}</strong></td>
                                 <td style="text-align: right;">${formatRM(jumlahMozek)}</td>
                             </tr>
                             <tr>
-                                <td>Perbelanjaan Kategori: ${escapeHtml(kategori.dataran || 'Dataran')}</td>
+                                <td>Perbelanjaan Kategori: <strong>${escapeHtml(kategori.dataran || 'Dataran')}</strong></td>
                                 <td style="text-align: right;">${formatRM(jumlahDataran)}</td>
                             </tr>
                             <tr>
-                                <td>Perbelanjaan Kategori: Lain-lain</td>
+                                <td>Perbelanjaan Kategori: <strong>Lain-lain</strong></td>
                                 <td style="text-align: right;">${formatRM(jumlahLainLain)}</td>
                             </tr>
                             <tr style="background: #f1f5f9; font-weight: bold;">
@@ -736,18 +739,18 @@
                                 <td style="text-align: right; color: #d97706;">${formatRM(jumlahKeseluruhan)}</td>
                             </tr>
                             <tr style="background: ${bakiPeruntukan < 0 ? '#fef2f2' : '#eff6ff'}; font-weight: bold;">
-                                <td>Baki Peruntukan</td>
+                                <td>Baki Peruntukan Projek</td>
                                 <td style="text-align: right; color: ${bakiPeruntukan < 0 ? '#dc2626' : '#1d4ed8'};">${formatRM(bakiPeruntukan)}</td>
                             </tr>
                         </tbody>
                     </table>
-                    <div style="display: flex; justify-content: space-between; margin-top: 35px; font-size: 11px; font-weight: 600;">
+                    <div style="display: flex; justify-content: space-between; margin-top: 30px; font-size: 11px; font-weight: 600;">
                         <div style="text-align: center; width: 45%;">
-                            <p style="margin: 0 0 25px 0;">Disediakan oleh,</p>
+                            <p style="margin: 0 c 20px 0;">Disediakan oleh,</p>
                             <p style="border-top: 1px solid #94a3b8; padding-top: 4px; margin: 0;">Bendahari</p>
                         </div>
                         <div style="text-align: center; width: 45%;">
-                            <p style="margin: 0 0 25px 0;">Disahkan oleh,</p>
+                            <p style="margin: 0 c 20px 0;">Disahkan oleh,</p>
                             <p style="border-top: 1px solid #94a3b8; padding-top: 4px; margin: 0;">Pengerusi Masjid Al-Idrisi</p>
                         </div>
                     </div>
