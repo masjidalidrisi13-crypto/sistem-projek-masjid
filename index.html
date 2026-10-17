@@ -70,8 +70,6 @@
         .btn-dark { background: #0f172a; color: white; width: 100%; }
         .btn-danger { background: #dc2626; color: white; padding: 6px 10px; }
         .btn-link { background: transparent; color: #047857; text-decoration: underline; padding: 4px; width: auto; }
-        .btn-info { background: #0284c7; color: white; width: 100%; }
-        .btn-info:hover { background: #0369a1; }
         
         .notice { 
             display: none; 
@@ -83,7 +81,6 @@
             border: 1px solid #6ee7b7; 
             font-weight: 600; 
         }
-        .notice.show { display: block; }
         
         .loading { 
             display: none; 
@@ -104,8 +101,17 @@
             box-shadow: 0 10px 15px rgba(15,23,42,.2);
         }
         
+        .section-title {
+            margin: 20px 0 10px;
+            font-size: 18px;
+            color: #065f46;
+            border-left: 4px solid #059669;
+            padding-left: 10px;
+        }
+
         .table-wrap { overflow-x: auto; border: 1px solid #cbd5e1; border-radius: 10px; margin-bottom: 24px; }
-        table { width: 100%; border-collapse: collapse; font-size: 13px; min-width: 1000px; }
+        table { width: 100%; border-collapse: collapse; font-size: 13px; }
+        .main-table { min-width: 1000px; }
         th { background: #1e293b; color: white; padding: 10px; border: 1px solid #475569; }
         th.sub { background: #334155; }
         td { padding: 10px; border: 1px solid #e2e8f0; }
@@ -114,6 +120,29 @@
         tr:nth-child(even) td { background: #f8fafc; }
         .total-row td { background: #1e293b!important; color: white; font-weight: 700; }
         
+        /* Jadual Analisa Ringkas */
+        .analisa-table-wrap {
+            margin-bottom: 24px;
+            border: 1px solid #059669;
+            border-radius: 10px;
+            overflow: hidden;
+            background: #fff;
+        }
+        .analisa-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 14px;
+        }
+        .analisa-table th {
+            background: #065f46;
+            color: white;
+            padding: 12px;
+            font-size: 15px;
+        }
+        .analisa-table td {
+            padding: 10px 14px;
+        }
+
         .form-box { 
             background: #f1f5f9; 
             border: 1px solid #cbd5e1; 
@@ -121,17 +150,8 @@
             padding: 18px; 
             margin: 0 auto 24px; 
             max-width: 1100px; 
-            display: flex; 
-            flex-direction: column; 
-            gap: 12px; 
         }
-        .form-box h3 { margin: 0; color: #334155; text-align: center; margin-bottom: 4px; }
-        .button-group-stack {
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-            width: 100%;
-        }
+        .form-box h3 { margin: 0 0 12px; color: #334155; text-align: center; }
         
         /* Modal Borang Tambah Rekod */
         #expenseModal {
@@ -173,63 +193,6 @@
         .negative-text.show { display: block; }
         .print-signatures { display: none; }
         
-        /* Modal Analisa A4 Portrait */
-        #analisaModal {
-            display: none;
-            position: fixed;
-            inset: 0;
-            background: rgba(15, 23, 42, 0.6);
-            z-index: 10000;
-            align-items: center;
-            justify-content: center;
-            padding: 15px;
-        }
-        .analisa-modal-content {
-            background: #ffffff;
-            width: 650px;
-            max-width: 100%;
-            max-height: 95vh;
-            border-radius: 8px;
-            display: flex;
-            flex-direction: column;
-            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
-            overflow: hidden;
-        }
-        .analisa-modal-header {
-            padding: 12px 20px;
-            background: #0f172a;
-            color: white;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-        .analisa-modal-body {
-            padding: 15px;
-            overflow-y: auto;
-            flex-grow: 1;
-            background: #fff;
-        }
-        .analisa-print-page {
-            width: 100%;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            color: #1e293b;
-        }
-        .analisa-table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 10px;
-            font-size: 13px;
-        }
-        .analisa-table th, .analisa-table td {
-            border: 1px solid #cbd5e1;
-            padding: 8px 12px;
-        }
-        .analisa-table th {
-            background: #1e293b;
-            color: white;
-            text-align: left;
-        }
-        
         @media(max-width: 900px) {
             .summary-grid { grid-template-columns: 1fr; }
         }
@@ -237,7 +200,7 @@
             @page { size: A4 landscape; margin: 8mm; }
             body { background: white; padding: 0; font-size: 10px; }
             .container { max-width: 100%; box-shadow: none; border-radius: 0; padding: 0; }
-            .no-print, .form-box, .print-area, .notice, .loading, #analisaModal, #expenseModal { display: none !important; }
+            .no-print, .form-box, .print-area, .notice, .loading, #expenseModal { display: none !important; }
             .summary-grid { gap: 8mm; margin-bottom: 10px; }
             .card { padding: 8px 10px; border-radius: 7px; }
             .card h3 { font-size: 9px; margin: 0 0 4px; }
@@ -251,31 +214,6 @@
             .print-signatures { display: flex !important; justify-content: space-between; margin-top: 45px; font-size: 11px; font-weight: 600; }
             .print-signatures div { width: 45%; text-align: center; }
             .print-signatures p { margin: 0 0 6px 0; }
-        }
-        /* Khusus untuk cetak analisa A4 Portrait 1 mukasurat dari modal */
-        @media print {
-            body.printing-analisa .container { display: none !important; }
-            body.printing-analisa @page { size: A4 portrait; margin: 10mm; }
-            body.printing-analisa #analisaModal {
-                display: flex !important;
-                position: absolute !important;
-                inset: 0 !important;
-                background: white !important;
-                padding: 0 !important;
-            }
-            body.printing-analisa .analisa-modal-content {
-                box-shadow: none !important;
-                max-height: 100vh !important;
-                height: 100% !important;
-                width: 100% !important;
-                border-radius: 0 !important;
-            }
-            body.printing-analisa .analisa-modal-header {
-                display: none !important;
-            }
-            body.printing-analisa .analisa-modal-body {
-                padding: 5px !important;
-            }
         }
     </style>
 </head>
@@ -302,6 +240,7 @@
             <h2>Masjid Al-Idrisi</h2>
             <p>Laporan Catatan Perbelanjaan Projek</p>
         </div>
+
         <div class="summary-grid">
             <div class="card green">
                 <h3>Jumlah Peruntukan</h3>
@@ -325,8 +264,54 @@
                 <div id="defisitText" class="negative-text">Defisit Peruntukan!</div>
             </div>
         </div>
+
+        <!-- JADUAL ANALISA KATEGORI & KEWANGAN PROJEK -->
+        <h3 class="section-title">Jadual Analisa Kewangan Mengikut Kategori</h3>
+        <div class="analisa-table-wrap">
+            <table class="analisa-table">
+                <thead>
+                    <tr>
+                        <th style="text-align:left;">Kategori / Perkara Kewangan</th>
+                        <th style="text-align:right; width: 220px;">Jumlah (RM)</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>Jumlah Peruntukan Keseluruhan</strong></td>
+                        <td style="text-align:right; font-weight:700; color:#047857;" id="analisaPeruntukan">RM0.00</td>
+                    </tr>
+                    <tr>
+                        <td>Perbelanjaan Kategori: <strong id="analisaLabelSyiling">Syiling</strong></td>
+                        <td style="text-align:right;" id="analisaSyiling">RM0.00</td>
+                    </tr>
+                    <tr>
+                        <td>Perbelanjaan Kategori: <strong id="analisaLabelMozek">Mozek</strong></td>
+                        <td style="text-align:right;" id="analisaMozek">RM0.00</td>
+                    </tr>
+                    <tr>
+                        <td>Perbelanjaan Kategori: <strong id="analisaLabelDataran">Dataran</strong></td>
+                        <td style="text-align:right;" id="analisaDataran">RM0.00</td>
+                    </tr>
+                    <tr>
+                        <td>Perbelanjaan Kategori: <strong>Lain-lain</strong></td>
+                        <td style="text-align:right;" id="analisaLainLain">RM0.00</td>
+                    </tr>
+                    <tr style="background:#f1f5f9; font-weight:bold;">
+                        <td>Jumlah Perbelanjaan Keseluruhan</td>
+                        <td style="text-align:right; color:#d97706;" id="analisaJumlahPerbelanjaan">RM0.00</td>
+                    </tr>
+                    <tr id="analisaBakiRow" style="background:#eff6ff; font-weight:bold;">
+                        <td>Baki Peruntukan Projek</td>
+                        <td style="text-align:right;" id="analisaBakiPeruntukan">RM0.00</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- JADUAL PERBELANJAAN TERPERINCI -->
+        <h3 class="section-title">Senarai Rekod Perbelanjaan Terperinci</h3>
         <div class="table-wrap">
-            <table>
+            <table class="main-table">
                 <thead>
                     <tr>
                         <th rowspan="2">Bil</th>
@@ -365,13 +350,9 @@
             <div><p>Disahkan oleh,</p><br><br><p>Pengerusi Masjid Al-Idrisi</p></div>
         </div>
 
-        <!-- Bahagian Butang Tambah Rekod & Analisa -->
         <div class="form-box no-print">
-            <h3>Pengurusan Rekod & Analisa</h3>
-            <div class="button-group-stack">
-                <button type="button" class="btn-primary" onclick="openExpenseModal()">+ Tambah Rekod</button>
-                <button type="button" class="btn-info" onclick="openAnalisaModal()">Pratonton Analisa</button>
-            </div>
+            <h3>Pengurusan Rekod</h3>
+            <button type="button" class="btn-primary" onclick="openExpenseModal()">+ Tambah Rekod Perbelanjaan Baru</button>
         </div>
         <div class="print-area no-print">
             <button class="btn-dark" onclick="window.print()">Cetak / Simpan sebagai PDF</button>
@@ -431,22 +412,6 @@
                         <button type="submit" class="btn-primary" id="submitBtnText">Simpan Rekod</button>
                     </div>
                 </form>
-            </div>
-        </div>
-    </div>
-
-    <!-- Modal Paparan Analisa A4 Portrait (Dalam Bentuk Jadual) -->
-    <div id="analisaModal">
-        <div class="analisa-modal-content">
-            <div class="analisa-modal-header">
-                <strong>Pratonton Analisa Kewangan Projek (A4 Portrait)</strong>
-                <button class="btn-danger" onclick="closeAnalisaModal()" style="padding: 4px 10px;">Tutup</button>
-            </div>
-            <div class="analisa-modal-body" id="analisaModalBody">
-                <!-- Kandungan Analisa Dimasukkan Secara Dinamik -->
-            </div>
-            <div style="padding: 12px 20px; background: #f8fafc; border-top: 1px solid #cbd5e1; text-align: right;">
-                <button class="btn-primary" onclick="printAnalisa()" style="width: auto;">Cetak Analisa (A4 Portrait)</button>
             </div>
         </div>
     </div>
@@ -543,12 +508,20 @@
         document.getElementById('modalCancelBtn').addEventListener('click', function() { window.closeSystemConfirm(false); });
         
         function applyKategoriLabels() {
-            document.getElementById("labelSyiling").textContent = kategori.syiling || 'Syiling';
-            document.getElementById("labelMozek").textContent = kategori.mozek || 'Mozek';
-            document.getElementById("labelDataran").textContent = kategori.dataran || 'Dataran';
-            document.getElementById("thSyiling").textContent = kategori.syiling || 'Syiling';
-            document.getElementById("thMozek").textContent = kategori.mozek || 'Mozek';
-            document.getElementById("thDataran").textContent = kategori.dataran || 'Dataran';
+            var s = kategori.syiling || 'Syiling';
+            var m = kategori.mozek || 'Mozek';
+            var d = kategori.dataran || 'Dataran';
+
+            document.getElementById("labelSyiling").textContent = s;
+            document.getElementById("labelMozek").textContent = m;
+            document.getElementById("labelDataran").textContent = d;
+            document.getElementById("thSyiling").textContent = s;
+            document.getElementById("thMozek").textContent = m;
+            document.getElementById("thDataran").textContent = d;
+
+            document.getElementById("analisaLabelSyiling").textContent = s;
+            document.getElementById("analisaLabelMozek").textContent = m;
+            document.getElementById("analisaLabelDataran").textContent = d;
         }
         window.editKategori = async function(key) {
             var current = kategori[key] || '';
@@ -687,88 +660,6 @@
                 window.showLoading(false);
             });
         }
-
-        // Fungsi Analisa Dalam Bentuk Jadual (Syiling, Mozek, Dataran, Lain-lain, Jumlah Peruntukan, Perbelanjaan & Baki)
-        window.openAnalisaModal = function() {
-            var jumlahSyiling = 0, jumlahMozek = 0, jumlahDataran = 0, jumlahLainLain = 0;
-            perbelanjaan.forEach(function(item) {
-                jumlahSyiling += parseNum(item.syiling);
-                jumlahMozek += parseNum(item.mozek);
-                jumlahDataran += parseNum(item.dataran);
-                jumlahLainLain += parseNum(item.lainLain);
-            });
-            var jumlahKeseluruhan = jumlahSyiling + jumlahMozek + jumlahDataran + jumlahLainLain;
-            var bakiPeruntukan = peruntukan - jumlahKeseluruhan;
-
-            var html = `
-                <div class="analisa-print-page">
-                    <div style="text-align: center; border-bottom: 2px solid #059669; padding-bottom: 8px; margin-bottom: 12px;">
-                        <h2 style="margin: 0; color: #065f46; font-size: 15px; text-transform: uppercase;">Analisa Kewangan Mengikut Kategori</h2>
-                        <h3 style="margin: 3px 0; color: #475569; font-size: 12px;">Masjid Al-Idrisi</h3>
-                    </div>
-                    <table class="analisa-table">
-                        <thead>
-                            <tr>
-                                <th>Butiran / Kategori</th>
-                                <th style="text-align: right; width: 130px;">Jumlah (RM)</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr>
-                                <td><strong>Jumlah Peruntukan Keseluruhan</strong></td>
-                                <td style="text-align: right; font-weight: 700; color: #047857;">${formatRM(peruntukan)}</td>
-                            </tr>
-                            <tr>
-                                <td>Perbelanjaan Kategori: <strong>${escapeHtml(kategori.syiling || 'Syiling')}</strong></td>
-                                <td style="text-align: right;">${formatRM(jumlahSyiling)}</td>
-                            </tr>
-                            <tr>
-                                <td>Perbelanjaan Kategori: <strong>${escapeHtml(kategori.mozek || 'Mozek')}</strong></td>
-                                <td style="text-align: right;">${formatRM(jumlahMozek)}</td>
-                            </tr>
-                            <tr>
-                                <td>Perbelanjaan Kategori: <strong>${escapeHtml(kategori.dataran || 'Dataran')}</strong></td>
-                                <td style="text-align: right;">${formatRM(jumlahDataran)}</td>
-                            </tr>
-                            <tr>
-                                <td>Perbelanjaan Kategori: <strong>Lain-lain</strong></td>
-                                <td style="text-align: right;">${formatRM(jumlahLainLain)}</td>
-                            </tr>
-                            <tr style="background: #f1f5f9; font-weight: bold;">
-                                <td>Jumlah Perbelanjaan Keseluruhan</td>
-                                <td style="text-align: right; color: #d97706;">${formatRM(jumlahKeseluruhan)}</td>
-                            </tr>
-                            <tr style="background: ${bakiPeruntukan < 0 ? '#fef2f2' : '#eff6ff'}; font-weight: bold;">
-                                <td>Baki Peruntukan Projek</td>
-                                <td style="text-align: right; color: ${bakiPeruntukan < 0 ? '#dc2626' : '#1d4ed8'};">${formatRM(bakiPeruntukan)}</td>
-                            </tr>
-                        </tbody>
-                    </table>
-                    <div style="display: flex; justify-content: space-between; margin-top: 30px; font-size: 11px; font-weight: 600;">
-                        <div style="text-align: center; width: 45%;">
-                            <p style="margin: 0 c 20px 0;">Disediakan oleh,</p>
-                            <p style="border-top: 1px solid #94a3b8; padding-top: 4px; margin: 0;">Bendahari</p>
-                        </div>
-                        <div style="text-align: center; width: 45%;">
-                            <p style="margin: 0 c 20px 0;">Disahkan oleh,</p>
-                            <p style="border-top: 1px solid #94a3b8; padding-top: 4px; margin: 0;">Pengerusi Masjid Al-Idrisi</p>
-                        </div>
-                    </div>
-                </div>
-            `;
-            document.getElementById('analisaModalBody').innerHTML = html;
-            document.getElementById('analisaModal').style.display = 'flex';
-        }
-        window.closeAnalisaModal = function() {
-            document.getElementById('analisaModal').style.display = 'none';
-        }
-        window.printAnalisa = function() {
-            document.body.classList.add('printing-analisa');
-            window.print();
-            setTimeout(function() {
-                document.body.classList.remove('printing-analisa');
-            }, 500);
-        }
         
         function render() {
             var tableBody = document.getElementById("tableBody");
@@ -810,19 +701,39 @@
             }
             var jumlahKeseluruhan = jumlahSyiling + jumlahMozek + jumlahDataran + jumlahLainLain;
             var baki = peruntukan - jumlahKeseluruhan;
+
+            // Kemaskini Kad Atas
             document.getElementById("jumlahPeruntukan").textContent = formatRM(peruntukan);
             document.getElementById("jumlahKeseluruhan").textContent = formatRM(jumlahKeseluruhan);
             document.getElementById("bakiPeruntukan").textContent = formatRM(baki);
             
+            // Kemaskini Jumlah Kategori Jadual Utama
             document.getElementById("totalSyiling").textContent = formatRM(jumlahSyiling);
             document.getElementById("totalMozek").textContent = formatRM(jumlahMozek);
             document.getElementById("totalDataran").textContent = formatRM(jumlahDataran);
             document.getElementById("totalLainLain").textContent = formatRM(jumlahLainLain);
             document.getElementById("totalSemua").textContent = formatRM(jumlahKeseluruhan);
             
+            // Kemaskini Jadual Analisa Kewangan
+            document.getElementById("analisaPeruntukan").textContent = formatRM(peruntukan);
+            document.getElementById("analisaSyiling").textContent = formatRM(jumlahSyiling);
+            document.getElementById("analisaMozek").textContent = formatRM(jumlahMozek);
+            document.getElementById("analisaDataran").textContent = formatRM(jumlahDataran);
+            document.getElementById("analisaLainLain").textContent = formatRM(jumlahLainLain);
+            document.getElementById("analisaJumlahPerbelanjaan").textContent = formatRM(jumlahKeseluruhan);
+            document.getElementById("analisaBakiPeruntukan").textContent = formatRM(baki);
+
+            var analisaBakiRow = document.getElementById("analisaBakiRow");
+            if (baki < 0) {
+                analisaBakiRow.style.background = "#fef2f2";
+                document.getElementById("analisaBakiPeruntukan").style.color = "#dc2626";
+            } else {
+                analisaBakiRow.style.background = "#eff6ff";
+                document.getElementById("analisaBakiPeruntukan").style.color = "#1d4ed8";
+            }
+
             var bakiCard = document.getElementById("bakiCard");
             var defisitText = document.getElementById("defisitText");
-            
             if (baki < 0) {
                 bakiCard.className = "card red";
                 defisitText.classList.add("show");
