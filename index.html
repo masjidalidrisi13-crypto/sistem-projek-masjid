@@ -1,1 +1,889 @@
+<!DOCTYPE html>
+<html lang="ms">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistem Projek Masjid Al-Idrisi</title>
+    <style>
+        * { box-sizing: border-box; }
+        body { 
+            margin: 0; 
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
+            background: #f8fafc; 
+            color: #1e293b; 
+            padding: 16px; 
+        }
+        .container { 
+            max-width: 1100px; 
+            margin: 0 auto; 
+            background: #fff; 
+            border-radius: 14px; 
+            padding: 22px; 
+            box-shadow: 0 10px 25px rgba(15,23,42,.12); 
+            position: relative; 
+        }
+        
+        .header { 
+            text-align: center; 
+            border-bottom: 3px solid #059669; 
+            padding-bottom: 16px; 
+            margin-bottom: 24px; 
+        }
+        .header h1 { margin: 0; color: #065f46; font-size: 30px; text-transform: uppercase; letter-spacing: 1px; }
+        .header h2 { margin: 6px 0; color: #475569; font-size: 22px; }
+        .header p { margin: 0; color: #64748b; }
+        
+        .summary-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-bottom: 24px; }
+        .card { border-radius: 12px; padding: 18px; border: 1px solid #d1d5db; }
+        .card h3 { margin: 0 0 10px; font-size: 14px; text-transform: uppercase; }
+        .card .amount { font-size: 28px; font-weight: 700; }
+        .green { background: #ecfdf5; border-color: #a7f3d0; }
+        .green h3, .green .amount { color: #047857; }
+        .amber { background: #fffbeb; border-color: #fde68a; }
+        .amber h3, .amber .amount { color: #d97706; }
+        .blue { background: #eff6ff; border-color: #bfdbfe; }
+        .blue h3, .blue .amount { color: #1d4ed8; }
+        .red { background: #fef2f2; border-color: #fecaca; }
+        .red h3, .red .amount { color: #dc2626; }
+        
+        .edit-row { display: flex; gap: 8px; align-items: center; }
+        input, select { 
+            width: 100%; 
+            padding: 9px 10px; 
+            border: 1px solid #cbd5e1; 
+            border-radius: 8px; 
+            font-size: 14px; 
+            background: #fff;
+        }
+        input:focus, select:focus { outline: none; border-color: #059669; box-shadow: 0 0 0 2px rgba(5,150,105,.18); }
+        
+        button { 
+            border: none; 
+            border-radius: 8px; 
+            padding: 11px 14px; 
+            cursor: pointer; 
+            font-weight: 600; 
+            font-size: 14px; 
+        }
+        .btn-primary { background: #059669; color: white; width: 100%; }
+        .btn-primary:hover { background: #047857; }
+        .btn-dark { background: #0f172a; color: white; width: 100%; }
+        .btn-danger { background: #dc2626; color: white; padding: 6px 10px; }
+        .btn-link { background: transparent; color: #047857; text-decoration: underline; padding: 4px; width: auto; }
+        .btn-info { background: #0284c7; color: white; width: 100%; }
+        .btn-info:hover { background: #0369a1; }
+        
+        .notice { 
+            display: none; 
+            margin-bottom: 16px; 
+            padding: 12px 14px; 
+            border-radius: 8px; 
+            background: #d1fae5; 
+            color: #065f46; 
+            border: 1px solid #6ee7b7; 
+            font-weight: 600; 
+        }
+        .notice.show { display: block; }
+        
+        .loading { 
+            display: none; 
+            position: fixed; 
+            top: 24px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 9999; 
+        }
+        .loading.show { display: block; }
+        .loading-box { 
+            background: #0f172a; 
+            color: #fff; 
+            padding: 10px 24px; 
+            border-radius: 30px; 
+            font-weight: 600; 
+            font-size: 14px;
+            box-shadow: 0 10px 15px rgba(15,23,42,.2);
+        }
+        
+        .table-wrap { overflow-x: auto; border: 1px solid #cbd5e1; border-radius: 10px; margin-bottom: 24px; }
+        table { width: 100%; border-collapse: collapse; font-size: 13px; min-width: 1000px; }
+        th { background: #1e293b; color: white; padding: 10px; border: 1px solid #475569; }
+        th.sub { background: #334155; }
+        td { padding: 10px; border: 1px solid #e2e8f0; }
+        td.center { text-align: center; }
+        td.right, th.right { text-align: right; }
+        tr:nth-child(even) td { background: #f8fafc; }
+        .total-row td { background: #1e293b!important; color: white; font-weight: 700; }
+        
+        .form-box { 
+            background: #f1f5f9; 
+            border: 1px solid #cbd5e1; 
+            border-radius: 12px; 
+            padding: 18px; 
+            margin: 0 auto 24px; 
+            max-width: 1100px; 
+            display: flex; 
+            flex-direction: column; 
+            gap: 12px; 
+        }
+        .form-box h3 { margin: 0; color: #334155; text-align: center; margin-bottom: 4px; }
+        .button-group-stack {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            width: 100%;
+        }
+        
+        /* Modal Borang Tambah Rekod */
+        #expenseModal {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(15, 23, 42, 0.6);
+            z-index: 10001;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+        .expense-modal-content {
+            background: #ffffff;
+            width: 700px;
+            max-width: 100%;
+            border-radius: 12px;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+            overflow: hidden;
+        }
+        .expense-modal-header {
+            padding: 16px 20px;
+            background: #0f172a;
+            color: white;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .expense-modal-body {
+            padding: 24px;
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+        .form-grid { display: grid; grid-template-columns: 1fr; gap: 12px; }
+        label { display: block; font-weight: 600; font-size: 13px; margin-bottom: 5px; color: #475569; }
+        
+        .print-area { text-align: center; display: flex; gap: 10px; justify-content: center; }
+        .negative-text { display: none; margin-top: 5px; font-size: 12px; color: #dc2626; font-weight: 700; }
+        .negative-text.show { display: block; }
+        .print-signatures { display: none; }
 
+        /* Modal Analisa A4 Portrait (Diperkemas supaya muat elok tanpa skrol melintang) */
+        #analisaModal {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(15, 23, 42, 0.6);
+            z-index: 10000;
+            align-items: center;
+            justify-content: center;
+            padding: 15px;
+        }
+        .analisa-modal-content {
+            background: #ffffff;
+            width: 550px;
+            max-width: 100%;
+            max-height: 95vh;
+            border-radius: 8px;
+            display: flex;
+            flex-direction: column;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+            overflow: hidden;
+        }
+        .analisa-modal-header {
+            padding: 12px 20px;
+            background: #0f172a;
+            color: white;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .analisa-modal-body {
+            padding: 15px;
+            overflow-y: auto;
+            flex-grow: 1;
+            background: #fff;
+        }
+        .analisa-print-page {
+            width: 100%;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            color: #1e293b;
+        }
+        .analisa-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+            font-size: 12px;
+            table-layout: fixed;
+        }
+        .analisa-table th, .analisa-table td {
+            border: 1px solid #cbd5e1;
+            padding: 6px 10px;
+            word-wrap: break-word;
+        }
+        .analisa-table th {
+            background: #065f46;
+            color: white;
+            text-align: left;
+        }
+        
+        @media(max-width: 900px) {
+            .summary-grid { grid-template-columns: 1fr; }
+        }
+        @media print {
+            @page { size: A4 landscape; margin: 8mm; }
+            body { background: white; padding: 0; font-size: 10px; }
+            .container { max-width: 100%; box-shadow: none; border-radius: 0; padding: 0; }
+            .no-print, .form-box, .print-area, .notice, .loading, #analisaModal, #expenseModal { display: none !important; }
+            .summary-grid { gap: 8mm; margin-bottom: 10px; }
+            .card { padding: 8px 10px; border-radius: 7px; }
+            .card h3 { font-size: 9px; margin: 0 0 4px; }
+            .card .amount { font-size: 11px; }
+            .header { padding-bottom: 6px; margin-bottom: 10px; }
+            .header h1 { font-size: 20px; }
+            .header h2 { font-size: 14px; }
+            .header p { font-size: 8px; }
+            table { min-width: 100%; font-size: 8px; table-layout: fixed; }
+            th, td { padding: 4px; word-break: break-word; }
+            .print-signatures { display: flex !important; justify-content: space-between; margin-top: 45px; font-size: 11px; font-weight: 600; }
+            .print-signatures div { width: 45%; text-align: center; }
+            .print-signatures p { margin: 0 0 6px 0; }
+        }
+        /* Khusus untuk cetak analisa A4 Portrait 1 mukasurat dari modal */
+        @media print {
+            body.printing-analisa .container { display: none !important; }
+            body.printing-analisa @page { size: A4 portrait; margin: 10mm; }
+            body.printing-analisa #analisaModal {
+                display: flex !important;
+                position: absolute !important;
+                inset: 0 !important;
+                background: white !important;
+                padding: 0 !important;
+            }
+            body.printing-analisa .analisa-modal-content {
+                box-shadow: none !important;
+                max-height: 100vh !important;
+                height: 100% !important;
+                width: 100% !important;
+                border-radius: 0 !important;
+            }
+            body.printing-analisa .analisa-modal-header {
+                display: none !important;
+            }
+            body.printing-analisa .analisa-modal-body {
+                padding: 5px !important;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Notifikasi & Loading Terapung -->
+        <div id="loading" class="loading"><div class="loading-box">Memproses data...</div></div>
+        <div id="notice" class="notice"></div>
+        
+        <!-- Modal Mesej Pengesahan Sistem -->
+        <div id="systemModal" style="display:none;position:fixed;inset:0;background:rgba(15,23,42,.45);z-index:9999;align-items:center;justify-content:center;">
+            <div style="background:#ffffff;color:#0f172a;width:360px;max-width:90%;border-radius:14px;padding:24px;box-shadow:0 20px 40px rgba(15,23,42,.28);text-align:left;">
+                <div id="systemModalTitle" style="font-size:18px;font-weight:700;margin-bottom:8px;">Mesej Sistem</div>
+                <div id="systemModalText" style="margin-bottom:20px;font-weight:600;line-height:1.4;"></div>
+                <div style="text-align:right;">
+                    <button class="btn-dark" id="modalCancelBtn" type="button" style="width:auto;">Batal</button> 
+                    <button class="btn-primary" id="modalOkBtn" type="button" style="width:auto;">OK</button>
+                </div>
+            </div>
+        </div>
+        
+        <div class="header">
+            <h1>Sistem Projek Masjid</h1>
+            <h2>Masjid Al-Idrisi</h2>
+            <p>Laporan Catatan Perbelanjaan Projek</p>
+        </div>
+        <div class="summary-grid">
+            <div class="card green">
+                <h3>Jumlah Peruntukan</h3>
+                <div id="peruntukanView">
+                    <span id="jumlahPeruntukan" class="amount">RM0.00</span> 
+                    <button class="btn-link no-print" onclick="showEditPeruntukan()">Ubah</button>
+                </div>
+                <div id="peruntukanEdit" class="edit-row no-print" style="display:none;">
+                    <strong>RM</strong>
+                    <input type="number" id="inputPeruntukan" placeholder="Masukkan jumlah..." step="0.01">
+                    <button class="btn-primary" onclick="savePeruntukan()" style="width:auto;">Simpan</button>
+                </div>
+            </div>
+            <div class="card amber">
+                <h3>Jumlah Perbelanjaan Keseluruhan</h3>
+                <span id="jumlahKeseluruhan" class="amount">RM0.00</span>
+            </div>
+            <div id="bakiCard" class="card blue">
+                <h3>Baki Peruntukan</h3>
+                <span id="bakiPeruntukan" class="amount">RM0.00</span>
+                <div id="defisitText" class="negative-text">Defisit Peruntukan!</div>
+            </div>
+        </div>
+        <div class="table-wrap">
+            <table>
+                <thead>
+                    <tr>
+                        <th rowspan="2">Bil</th>
+                        <th rowspan="2">Perkara</th>
+                        <th rowspan="2">Tarikh</th>
+                        <th colspan="5">Butiran</th>
+                        <th rowspan="2" class="right">Jumlah (RM)</th>
+                        <th rowspan="2" class="no-print">Tindakan</th>
+                    </tr>
+                    <tr>
+                        <th class="sub" style="text-align:center" id="thSyiling">Syiling</th>
+                        <th class="sub" style="text-align:center" id="thMozek">Mozek</th>
+                        <th class="sub" style="text-align:center" id="thDataran">Dataran</th>
+                        <th class="sub" style="text-align:center">Lain-lain</th>
+                        <th class="sub" style="text-align:center">Catatan</th>
+                    </tr>
+                </thead>
+                <tbody id="tableBody"></tbody>
+                <tfoot>
+                    <tr class="total-row">
+                        <td colspan="3" class="right">Jumlah Besar Kategori:</td>
+                        <td id="totalSyiling" class="right">RM0.00</td>
+                        <td id="totalMozek" class="right">RM0.00</td>
+                        <td id="totalDataran" class="right">RM0.00</td>
+                        <td id="totalLainLain" class="right">RM0.00</td>
+                        <td></td>
+                        <td id="totalSemua" class="right">RM0.00</td>
+                        <td class="no-print"></td>
+                    </tr>
+                </tfoot>
+            </table>
+        </div>
+        
+        <div class="print-signatures">
+            <div><p>Disediakan,</p><br><br><p>Bendahari</p></div>
+            <div><p>Disahkan oleh,</p><br><br><p>Pengerusi Masjid Al-Idrisi</p></div>
+        </div>
+        <!-- Bahagian Butang Tambah Rekod & Analisa (Disusun Atas Bawah) -->
+        <div class="form-box no-print">
+            <h3>Pengurusan Rekod & Analisa</h3>
+            <div class="button-group-stack">
+                <button type="button" class="btn-primary" onclick="openExpenseModal()">+ Tambah Rekod</button>
+                <button type="button" class="btn-info" onclick="openAnalisaModal()">Pratonton Analisa</button>
+            </div>
+        </div>
+        <div class="print-area no-print">
+            <button class="btn-dark" onclick="window.print()">Cetak / Simpan sebagai PDF</button>
+        </div>
+    </div>
+    <!-- Modal Borang Tambah / Kemaskini Rekod -->
+    <div id="expenseModal">
+        <div class="expense-modal-content">
+            <div class="expense-modal-header">
+                <strong id="expenseModalTitle">Tambah Rekod Perbelanjaan Baru</strong>
+                <button class="btn-danger" onclick="closeExpenseModal()" style="padding: 4px 10px;">Tutup</button>
+            </div>
+            <div class="expense-modal-body">
+                <form id="expenseForm" autocomplete="off">
+                    <div class="form-grid">
+                        <div>
+                            <label>Perkara</label>
+                            <input type="text" id="perkara" name="perkaraBaru" autocomplete="off" placeholder="Contoh: Pembelian Simen" required>
+                        </div>
+                        <div>
+                            <label>Tarikh</label>
+                            <input type="date" id="tarikh" autocomplete="off">
+                        </div>
+                        <div>
+                            <label>
+                                <span id="labelSyiling">Syiling</span> 
+                                <button type="button" class="btn-link" onclick="editKategori('syiling')" title="Ubah nama">✎</button>
+                            </label>
+                            <input type="number" id="syiling" step="0.01" min="0" placeholder="0.00" autocomplete="off">
+                        </div>
+                        <div>
+                            <label>
+                                <span id="labelMozek">Mozek</span> 
+                                <button type="button" class="btn-link" onclick="editKategori('mozek')" title="Ubah nama">✎</button>
+                            </label>
+                            <input type="number" id="mozek" step="0.01" min="0" placeholder="0.00" autocomplete="off">
+                        </div>
+                        <div>
+                            <label>
+                                <span id="labelDataran">Dataran</span> 
+                                <button type="button" class="btn-link" onclick="editKategori('dataran')" title="Ubah nama">✎</button>
+                            </label>
+                            <input type="number" id="dataran" step="0.01" min="0" placeholder="0.00" autocomplete="off">
+                        </div>
+                        <div>
+                            <label>Lain-lain (RM)</label>
+                            <input type="number" id="lainLain" step="0.01" min="0" placeholder="0.00" autocomplete="off">
+                        </div>
+                        <div>
+                            <label>Catatan</label>
+                            <input type="text" id="catatan" autocomplete="off" placeholder="Catatan ringkas">
+                        </div>
+                    </div>
+                    <div style="margin-top: 20px; display: flex; gap: 10px;">
+                        <button type="button" class="btn-dark" onclick="closeExpenseModal()">Batal</button>
+                        <button type="submit" class="btn-primary" id="submitBtnText">Simpan Rekod</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    <!-- Modal Paparan Analisa A4 Portrait -->
+    <div id="analisaModal">
+        <div class="analisa-modal-content">
+            <div class="analisa-modal-header">
+                <strong>Pratonton Analisa Kewangan Projek (A4 Portrait)</strong>
+                <button class="btn-danger" onclick="closeAnalisaModal()" style="padding: 4px 10px;">Tutup</button>
+            </div>
+            <div class="analisa-modal-body" id="analisaModalBody">
+                <!-- Kandungan Analisa Dimasukkan Secara Dinamik -->
+            </div>
+            <div style="padding: 12px 20px; background: #f8fafc; border-top: 1px solid #cbd5e1; text-align: right;">
+                <button class="btn-primary" onclick="printAnalisa()" style="width: auto;">Cetak Analisa (A4 Portrait)</button>
+            </div>
+        </div>
+    </div>
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.4.0/firebase-app.js";
+        import { getAuth, signInAnonymously, signInWithCustomToken } from "https://www.gstatic.com/firebasejs/11.4.0/firebase-auth.js";
+        import { getFirestore, doc, setDoc, updateDoc, deleteDoc, onSnapshot, collection, addDoc } from "https://www.gstatic.com/firebasejs/11.4.0/firebase-firestore.js";
+        
+        const appId = typeof __app_id !== 'undefined' ? __app_id : 'sistem-masjid-idrisi';
+        
+              
+        const firebaseConfig = {
+            apiKey: "AIzaSyDEe2UDHIHHuNYOXGbiLgASzn2YLONdIq8", 
+            authDomain: "sistem-projek-masjid.firebaseapp.com", 
+            databaseURL: "https://sistem-projek-masjid-default-rtdb.firebaseio.com", 
+            projectId: "sistem-projek-masjid", 
+            storageBucket: "sistem-projek-masjid.firebasestorage.app", 
+            messagingSenderId: "63172452010", 
+            appId: "1:63172452010:web:c8a631430f76b96bc47ad3" 
+        };
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
+        let peruntukan = 0;
+        let perbelanjaan = [];
+        let kategori = { syiling: 'Syiling', mozek: 'Mozek', dataran: 'Dataran' };
+        
+        let loadingTimer = null;
+        let modalCallback = null;
+        
+        function parseNum(value) {
+            var num = parseFloat(value);
+            return isNaN(num) ? 0 : num;
+        }
+        function formatRM(amount) {
+            return new Intl.NumberFormat("ms-MY", { style: "currency", currency: "MYR" }).format(parseNum(amount));
+        }
+        function formatTarikh(tarikhStr) {
+            if (!tarikhStr) return "-";
+            var parts = String(tarikhStr).split("-");
+            if (parts.length === 3) {
+                return parts[2] + "/" + parts[1] + "/" + parts[0];
+            }
+            return tarikhStr;
+        }
+        function escapeHtml(text) {
+            var div = document.createElement("div");
+            div.textContent = text || "";
+            return div.innerHTML;
+        }
+        window.showLoading = function(show) {
+            var loading = document.getElementById("loading");
+            if (!loading) return;
+            if (show) {
+                loading.classList.add("show");
+                clearTimeout(loadingTimer);
+                loadingTimer = setTimeout(function() {
+                    loading.classList.remove("show");
+                }, 5000);
+            } else {
+                clearTimeout(loadingTimer);
+                loadingTimer = null;
+                loading.classList.remove("show");
+            }
+        }
+        window.showNotice = function(message) { showMessage(message); }
+        
+        window.showMessage = function(message) {
+            modalCallback = null;
+            document.getElementById('systemModalTitle').textContent = 'Mesej Sistem';
+            document.getElementById('systemModalText').textContent = message;
+            document.getElementById('modalCancelBtn').style.display = 'none';
+            document.getElementById('modalOkBtn').textContent = 'OK';
+            document.getElementById('systemModal').style.display = 'flex';
+        }
+        window.showSystemConfirm = function(message, callback) {
+            modalCallback = callback;
+            document.getElementById('systemModalTitle').textContent = 'Pengesahan Sistem';
+            document.getElementById('systemModalText').textContent = message;
+            document.getElementById('modalCancelBtn').style.display = 'inline-block';
+            document.getElementById('modalOkBtn').textContent = 'OK';
+            document.getElementById('systemModal').style.display = 'flex';
+        }
+        window.closeSystemConfirm = function(result) {
+            document.getElementById('systemModal').style.display = 'none';
+            document.getElementById('modalCancelBtn').style.display = 'inline-block';
+            if (modalCallback) {
+                var cb = modalCallback;
+                modalCallback = null;
+                cb(result);
+            }
+        }
+        document.getElementById('modalOkBtn').addEventListener('click', function() { window.closeSystemConfirm(true); });
+        document.getElementById('modalCancelBtn').addEventListener('click', function() { window.closeSystemConfirm(false); });
+        
+        function applyKategoriLabels() {
+            document.getElementById("labelSyiling").textContent = kategori.syiling || 'Syiling';
+            document.getElementById("labelMozek").textContent = kategori.mozek || 'Mozek';
+            document.getElementById("labelDataran").textContent = kategori.dataran || 'Dataran';
+            document.getElementById("thSyiling").textContent = kategori.syiling || 'Syiling';
+            document.getElementById("thMozek").textContent = kategori.mozek || 'Mozek';
+            document.getElementById("thDataran").textContent = kategori.dataran || 'Dataran';
+        }
+        window.editKategori = async function(key) {
+            var current = kategori[key] || '';
+            var namaBaru = prompt('Masukkan nama kategori baharu:', current);
+            if (namaBaru === null) return;
+            
+            namaBaru = namaBaru.trim();
+            if (!namaBaru) { window.showNotice('Nama kategori tidak boleh kosong.'); return; }
+            
+            kategori[key] = namaBaru;
+            applyKategoriLabels();
+            if (!auth.currentUser) return;
+            window.showLoading(true);
+            try {
+                const configRef = doc(db, 'artifacts', appId, 'public', 'data', 'metadata', 'config');
+                await setDoc(configRef, { kategori: kategori }, { merge: true });
+                window.showNotice('Nama kategori berjaya dikemaskini.');
+            } catch (err) {
+                console.error(err);
+                window.showNotice('Gagal menyimpan kategori ke pangkalan data.');
+            }
+            window.showLoading(false);
+        }
+        window.showEditPeruntukan = function() {
+            document.getElementById("inputPeruntukan").value = peruntukan;
+            document.getElementById("peruntukanView").style.display = "none";
+            document.getElementById("peruntukanEdit").style.display = "flex";
+        }
+        window.hideEditPeruntukan = function() {
+            document.getElementById("peruntukanView").style.display = "block";
+            document.getElementById("peruntukanEdit").style.display = "none";
+        }
+        window.savePeruntukan = async function() {
+            var value = parseNum(document.getElementById("inputPeruntukan").value);
+            if (!auth.currentUser) return;
+            
+            window.showLoading(true);
+            try {
+                const configRef = doc(db, 'artifacts', appId, 'public', 'data', 'metadata', 'config');
+                await setDoc(configRef, { peruntukan: value }, { merge: true });
+                
+                peruntukan = value;
+                window.hideEditPeruntukan();
+                render();
+                window.showNotice("Peruntukan berjaya dikemaskini.");
+            } catch (err) {
+                console.error(err);
+                window.showNotice("Ralat simpan peruntukan: " + err.message);
+            }
+            window.showLoading(false);
+        }
+        document.getElementById("inputPeruntukan").addEventListener("keydown", function(event) {
+            if (event.key === "Enter") { window.savePeruntukan(); }
+        });
+        // Fungsi Modal Tambah Rekod
+        window.openExpenseModal = function() {
+            document.getElementById("expenseForm").reset();
+            document.getElementById("expenseForm").removeAttribute("data-edit-id");
+            document.getElementById("expenseModalTitle").textContent = "Tambah Rekod Perbelanjaan Baru";
+            document.getElementById("submitBtnText").textContent = "Simpan Rekod";
+            document.getElementById("expenseModal").style.display = "flex";
+        }
+        window.closeExpenseModal = function() {
+            document.getElementById("expenseModal").style.display = "none";
+        }
+        
+        window.addExpense = async function(event) {
+            event.preventDefault();
+            var id = document.getElementById("expenseForm").getAttribute("data-edit-id") || '';
+            
+            var dataItem = {
+                perkara: document.getElementById("perkara").value.trim(),
+                tarikh: document.getElementById("tarikh").value,
+                syiling: parseNum(document.getElementById("syiling").value),
+                mozek: parseNum(document.getElementById("mozek").value),
+                dataran: parseNum(document.getElementById("dataran").value),
+                lainLain: parseNum(document.getElementById("lainLain").value),
+                catatan: document.getElementById("catatan").value.trim()
+            };
+            if (!dataItem.perkara) { window.showNotice("Sila masukkan perkara."); return; }
+            if (!auth.currentUser) return;
+            window.showLoading(true);
+            try {
+                if (id) {
+                    const docRef = doc(db, 'artifacts', appId, 'public', 'data', 'perbelanjaan', id);
+                    await updateDoc(docRef, dataItem);
+                    window.showNotice("Rekod berjaya dikemaskini.");
+                } else {
+                    dataItem.createdAt = new Date().getTime();
+                    const colRef = collection(db, 'artifacts', appId, 'public', 'data', 'perbelanjaan');
+                    await addDoc(colRef, dataItem);
+                    window.showNotice("Rekod berjaya disimpan.");
+                }
+                closeExpenseModal();
+                document.getElementById("expenseForm").reset();
+            } catch (err) {
+                console.error(err);
+                window.showNotice("Ralat menyimpan rekod: " + err.message);
+            }
+            window.showLoading(false);
+        }
+        document.getElementById("expenseForm").addEventListener("submit", window.addExpense);
+        
+        window.editExpense = function(id) {
+            var item = perbelanjaan.find(function(x) { return String(x.id) === String(id); });
+            if (!item) { window.showNotice("Rekod tidak dijumpai."); return; }
+            
+            document.getElementById("expenseForm").setAttribute("data-edit-id", item.id);
+            document.getElementById("perkara").value = item.perkara || '';
+            document.getElementById("tarikh").value = item.tarikh || '';
+            document.getElementById("syiling").value = item.syiling || 0;
+            document.getElementById("mozek").value = item.mozek || 0;
+            document.getElementById("dataran").value = item.dataran || 0;
+            document.getElementById("lainLain").value = item.lainLain || 0;
+            document.getElementById("catatan").value = item.catatan || '';
+            
+            document.getElementById("expenseModalTitle").textContent = "Kemaskini Rekod Perbelanjaan";
+            document.getElementById("submitBtnText").textContent = "Kemaskini Rekod";
+            document.getElementById("expenseModal").style.display = "flex";
+        }
+        
+        window.deleteExpense = function(id) {
+            window.showSystemConfirm("Adakah anda pasti untuk memadam rekod ini?", async function(ok) {
+                if (!ok) return;
+                if (!auth.currentUser) return;
+                
+                window.showLoading(true);
+                try {
+                    const docRef = doc(db, 'artifacts', appId, 'public', 'data', 'perbelanjaan', String(id));
+                    await deleteDoc(docRef);
+                    window.showNotice("Rekod berjaya dipadam.");
+                } catch (err) {
+                    console.error(err);
+                    window.showNotice("Gagal memadam rekod: " + err.message);
+                }
+                window.showLoading(false);
+            });
+        }
+        // Fungsi Modal Analisa & Cetak Analisa A4 Portrait
+        window.openAnalisaModal = function() {
+            var jumlahSyiling = 0, jumlahMozek = 0, jumlahDataran = 0, jumlahLainLain = 0;
+            perbelanjaan.forEach(function(item) {
+                jumlahSyiling += parseNum(item.syiling);
+                jumlahMozek += parseNum(item.mozek);
+                jumlahDataran += parseNum(item.dataran);
+                jumlahLainLain += parseNum(item.lainLain);
+            });
+            var jumlahKeseluruhan = jumlahSyiling + jumlahMozek + jumlahDataran + jumlahLainLain;
+            var bakiPeruntukan = peruntukan - jumlahKeseluruhan;
+            var html = `
+                <div class="analisa-print-page">
+                    <div style="text-align: center; border-bottom: 2px solid #059669; padding-bottom: 10px; margin-bottom: 12px;">
+                        <h2 style="margin: 0; color: #065f46; font-size: 16px; text-transform: uppercase;">Analisa Kewangan Projek</h2>
+                        <h3 style="margin: 3px 0; color: #475569; font-size: 13px;">Masjid Al-Idrisi</h3>
+                    </div>
+                    <table class="analisa-table">
+                        <thead>
+                            <tr>
+                                <th>Perkara / Kategori</th>
+                                <th style="text-align: right; width: 120px;">Jumlah (RM)</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>Jumlah Peruntukan</td>
+                                <td style="text-align: right; font-weight: 700; color: #047857;">${formatRM(peruntukan)}</td>
+                            </tr>
+                            <tr>
+                                <td>Perbelanjaan Kategori: ${escapeHtml(kategori.syiling || 'Syiling')}</td>
+                                <td style="text-align: right;">${formatRM(jumlahSyiling)}</td>
+                            </tr>
+                            <tr>
+                                <td>Perbelanjaan Kategori: ${escapeHtml(kategori.mozek || 'Mozek')}</td>
+                                <td style="text-align: right;">${formatRM(jumlahMozek)}</td>
+                            </tr>
+                            <tr>
+                                <td>Perbelanjaan Kategori: ${escapeHtml(kategori.dataran || 'Dataran')}</td>
+                                <td style="text-align: right;">${formatRM(jumlahDataran)}</td>
+                            </tr>
+                            <tr>
+                                <td>Perbelanjaan Kategori: Lain-lain</td>
+                                <td style="text-align: right;">${formatRM(jumlahLainLain)}</td>
+                            </tr>
+                            <tr style="background: #f1f5f9; font-weight: bold;">
+                                <td>Jumlah Perbelanjaan Keseluruhan</td>
+                                <td style="text-align: right; color: #d97706;">${formatRM(jumlahKeseluruhan)}</td>
+                            </tr>
+                            <tr style="background: ${bakiPeruntukan < 0 ? '#fef2f2' : '#eff6ff'}; font-weight: bold;">
+                                <td>Baki Peruntukan</td>
+                                <td style="text-align: right; color: ${bakiPeruntukan < 0 ? '#dc2626' : '#1d4ed8'};">${formatRM(bakiPeruntukan)}</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <div style="display: flex; justify-content: space-between; margin-top: 35px; font-size: 11px; font-weight: 600;">
+                        <div style="text-align: center; width: 45%;">
+                            <p style="margin: 0 0 25px 0;">Disediakan oleh,</p>
+                            <p style="border-top: 1px solid #94a3b8; padding-top: 4px; margin: 0;">Bendahari</p>
+                        </div>
+                        <div style="text-align: center; width: 45%;">
+                            <p style="margin: 0 0 25px 0;">Disahkan oleh,</p>
+                            <p style="border-top: 1px solid #94a3b8; padding-top: 4px; margin: 0;">Pengerusi Masjid Al-Idrisi</p>
+                        </div>
+                    </div>
+                </div>
+            `;
+            document.getElementById('analisaModalBody').innerHTML = html;
+            document.getElementById('analisaModal').style.display = 'flex';
+        }
+        window.closeAnalisaModal = function() {
+            document.getElementById('analisaModal').style.display = 'none';
+        }
+        window.printAnalisa = function() {
+            document.body.classList.add('printing-analisa');
+            window.print();
+            setTimeout(function() {
+                document.body.classList.remove('printing-analisa');
+            }, 500);
+        }
+        
+        function render() {
+            var tableBody = document.getElementById("tableBody");
+            var jumlahSyiling = 0, jumlahMozek = 0, jumlahDataran = 0, jumlahLainLain = 0;
+            
+            tableBody.innerHTML = "";
+            
+            if (perbelanjaan.length === 0) {
+                tableBody.innerHTML = '<tr><td colspan="10" class="center">Tiada rekod perbelanjaan. Sila tambah di bawah.</td></tr>';
+            } else {
+                perbelanjaan.forEach(function(item, index) {
+                    var syiling = parseNum(item.syiling), mozek = parseNum(item.mozek), 
+                        dataran = parseNum(item.dataran), lainLain = parseNum(item.lainLain);
+                    var jumlahItem = syiling + mozek + dataran + lainLain;
+                    
+                    jumlahSyiling += syiling;
+                    jumlahMozek += mozek;
+                    jumlahDataran += dataran;
+                    jumlahLainLain += lainLain;
+                    
+                    var row = document.createElement("tr");
+                    row.innerHTML = `
+                        <td class="center">${index + 1}</td>
+                        <td>${escapeHtml(item.perkara)}</td>
+                        <td class="center">${formatTarikh(item.tarikh)}</td>
+                        <td class="right">${formatRM(syiling)}</td>
+                        <td class="right">${formatRM(mozek)}</td>
+                        <td class="right">${formatRM(dataran)}</td>
+                        <td class="right">${formatRM(lainLain)}</td>
+                        <td>${escapeHtml(item.catatan || '')}</td>
+                        <td class="right"><strong>${formatRM(jumlahItem)}</strong></td>
+                        <td class="center no-print">
+                            <button class="btn-link" onclick="window.editExpense('${item.id}')" title="Kemaskini data">✎</button> 
+                            <button class="btn-danger" onclick="window.deleteExpense('${item.id}')" title="Padam rekod">🗑</button>
+                        </td>
+                    `;
+                    tableBody.appendChild(row);
+                });
+            }
+            var jumlahKeseluruhan = jumlahSyiling + jumlahMozek + jumlahDataran + jumlahLainLain;
+            var baki = peruntukan - jumlahKeseluruhan;
+            document.getElementById("jumlahPeruntukan").textContent = formatRM(peruntukan);
+            document.getElementById("jumlahKeseluruhan").textContent = formatRM(jumlahKeseluruhan);
+            document.getElementById("bakiPeruntukan").textContent = formatRM(baki);
+            
+            document.getElementById("totalSyiling").textContent = formatRM(jumlahSyiling);
+            document.getElementById("totalMozek").textContent = formatRM(jumlahMozek);
+            document.getElementById("totalDataran").textContent = formatRM(jumlahDataran);
+            document.getElementById("totalLainLain").textContent = formatRM(jumlahLainLain);
+            document.getElementById("totalSemua").textContent = formatRM(jumlahKeseluruhan);
+            
+            var bakiCard = document.getElementById("bakiCard");
+            var defisitText = document.getElementById("defisitText");
+            
+            if (baki < 0) {
+                bakiCard.className = "card red";
+                defisitText.classList.add("show");
+            } else {
+                bakiCard.className = "card blue";
+                defisitText.classList.remove("show");
+            }
+        }
+        
+        function setupRealtimeListeners() {
+            const configRef = doc(db, 'artifacts', appId, 'public', 'data', 'metadata', 'config');
+            onSnapshot(configRef, (snap) => {
+                if (snap.exists()) {
+                    const data = snap.data();
+                    peruntukan = parseNum(data.peruntukan) || 0;
+                    if (data.kategori) {
+                        kategori = data.kategori;
+                    }
+                    if (peruntukan === 0) window.showEditPeruntukan();
+                } else {
+                    window.showEditPeruntukan();
+                }
+                applyKategoriLabels();
+                render();
+                window.showLoading(false);
+            }, (err) => {
+                console.error("Firebase Snapshot Error (Config):", err);
+                window.showNotice("Ralat memuat data tetapan.");
+                window.showLoading(false);
+            });
+            
+            const expensesRef = collection(db, 'artifacts', appId, 'public', 'data', 'perbelanjaan');
+            onSnapshot(expensesRef, (snapshot) => {
+                var newPerbelanjaan = [];
+                snapshot.forEach((docSnap) => {
+                    newPerbelanjaan.push({ id: docSnap.id, ...docSnap.data() });
+                });
+                newPerbelanjaan.sort((a, b) => (a.createdAt || 0) - (b.createdAt || 0));
+                perbelanjaan = newPerbelanjaan;
+                render();
+            }, (err) => {
+                console.error("Firebase Snapshot Error (Expenses):", err);
+                window.showNotice("Ralat memuat data perbelanjaan.");
+            });
+        }
+        
+        async function initApp() {
+            window.showLoading(true);
+            try {
+                if (typeof __initial_auth_token !== 'undefined') {
+                    await signInWithCustomToken(auth, __initial_auth_token);
+                } else {
+                    await signInAnonymously(auth);
+                }
+                
+                if (!auth.currentUser) throw new Error("Pengesahan gagal");
+                setupRealtimeListeners();
+            } catch (err) {
+                console.error("Initialization Error:", err);
+                window.showNotice("Ralat menyambung ke sistem. " + err.message);
+                window.showLoading(false);
+            }
+        }
+        initApp();
+    </script>
+</body>
+</html>
